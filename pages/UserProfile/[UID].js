@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import firebase from 'firebase/app';
 import { getUserById } from '../../api/UserData';
+import ExpensesCard from '../../components/ExpensesCard';
 
 export default function UserProfile() {
   const user = firebase.auth().currentUser; // Get the current user from Firebase authentication
   const [userData, setUserData] = useState(null);
+
+  const currentMonth = new Date().toLocaleString('default', { month: 'long' }); // Get the current month for display purposes
 
   useEffect(() => {
     if (user) { // Ensure the user object is available
@@ -28,13 +31,20 @@ export default function UserProfile() {
 
   return (
     <div>
-      <h2>Welcome to the user profile page!</h2>
+      <h2>Welcome To {user.displayName} Bill Payment Tracker</h2>
       {userData ? (
-        <div>
-          <p><strong>User ID:</strong> {userData.userId}</p>
-          <p><strong>User Name:</strong> {userData.userName}</p>
-          {/* Display other user data as needed */}
-        </div>
+        <>
+          <div>
+            <p><strong>User ID:</strong> {userData.userId}</p>
+            <p><strong>User Name:</strong> {userData.userName}</p>
+            {/* Display other user data as needed */}
+          </div>
+          <div>
+            <h3>{currentMonth} Expenses</h3>
+            {/* Render the ExpensesCard component to show the user's expenses */}
+            <ExpensesCard />
+          </div>
+        </>
       ) : (
         <p>Loading user data...</p> // Show a loading message while the data is being fetched
       )}
