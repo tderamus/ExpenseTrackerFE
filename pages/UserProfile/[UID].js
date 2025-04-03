@@ -11,7 +11,6 @@ export default function UserProfile() {
       getUserById(user.uid)
         .then((data) => {
           if (data) {
-            console.log('User data fetched:', data); // Log the fetched user data for debugging
             setUserData(data); // Set the user data state with the fetched data
           } else {
             console.error('No user data found');
