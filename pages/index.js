@@ -1,12 +1,37 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import firebase from 'firebase/app';
 import { Button } from 'react-bootstrap';
+import { useRouter } from 'next/router';
 import { signOut } from '../utils/auth';
 import NewUserForm from '../components/NewUserForm';
+import { getUserById } from '../api/UserData';
 
 function Home() {
   const user = firebase.auth().currentUser;
   const [showNewUserForm, setShowNewUserForm] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    getUserById(user.uid) // Fetch user data by ID when the component mounts or user changes
+      .then((data) => {
+        if (data) {
+          console.log('User data fetched:', data); // Log the fetched user data for debugging
+          setLoggedInUser(data); // Set the logged-in user state with the fetched data
+        } else {
+          console.error('No user data found, showing NewUserForm');
+          setShowNewUserForm(true); // If no user data found, show the form
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching user data:', error); // Log any errors that occur during the fetch
+        setShowNewUserForm(true); // If there's an error, show the NewUserForm
+      });
+
+    if (!loggedInUser && user) {
+      router.push('/UserProfile/[UID]', `/UserProfile/${user.uid}`); // Redirect to UserProfile if no user data found
+    }
+  }, [user]); // Run the effect when the component mounts or when the user changes
 
   const handleRegisterClick = () => {
     // Check if user is logged in
